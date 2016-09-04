@@ -1,5 +1,6 @@
 var counter = 0;
 var mic;
+var heard_something = false;
 
 function preload() {
   fontRegular = loadFont("assets/DIN/DIN.ttf");
@@ -7,10 +8,9 @@ function preload() {
   fontBold = loadFont("assets/DIN/DIN Bold.ttf");
 }
 
-
 function setup() {
   createCanvas(400, 400);
-  
+
   mic = new p5.AudioIn()
   mic.start();
 
@@ -21,15 +21,15 @@ function setup() {
 }
 
 // function counting() {
-  function mousePressed() {
-    counter++;
-  }
+function mousePressed() {
+  counter++;
+}
 // }
 
-function audio_counter(mic_listener){
-  var micListener = mic_listener;
-  if(micListener > 0.3){
+function audio_counter() {
+  if (!heard_something) {
     counter++;
+    heard_something = true;
   }
 }
 
@@ -43,27 +43,27 @@ function count_display() {
   var text_Size = 120;
   textSize(text_Size);
   textAlign(CENTER, CENTER);
-  
+
   // Text formatting  
   fill(255);
   // noFill();
   // stroke(255);
   rectMode(CENTER);
-  
+
   // textFont(fontRegular);
   textFont(fontBold);
   // textFont(fontMedium);
 
-  
+
   // Display text
   // Division by text_size in order to 
   text(counter, (width / 2) - (text_Size / 35), (height / 2) - (text_Size / 7));
 }
 
-function mic_input(){
+function mic_input() {
   micLevel = mic.getLevel();
-  ellipse(width/2, constrain(height-micLevel*height*5, 0, height), 10, 10);
-  return(micLevel);
+  ellipse(width / 2, constrain(height - micLevel * height * 5, 0, height), 10, 10);
+  // return (micLevel);
 }
 
 function draw() {
@@ -71,10 +71,13 @@ function draw() {
   // counting();
   // circle();
   mic_input();
-  audio_counter(micLevel);
+  if (micLevel > 0.03) {
+    // heard_something = true;
+    audio_counter(micLevel);
+  } else {
+    heard_something = false;
+  }
   count_display();
   println(micLevel);
-  
- 
-  
+  println(heard_something);
 }
